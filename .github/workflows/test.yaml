@@ -13,10 +13,19 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - name: Set up WARP
-        uses: fscarmen/warp-on-actions@v1.1
-      - id: test
+      - uses: DeterminateSystems/nix-installer-action@v12
+        with:
+          extra-conf: |
+            trusted-users = root build
+            substituters = https://nixos-sbc.cachix.org/ https://cache.nixos.org/
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nixos-sbc.cachix.org-1:XMK0HnQmmGIt1lYy1y+JsxLpHVaSTRRWvd6T6cU+I2M=
+            builders = ssh-ng://builder@hourai.kangaroo-tetra.ts.net aarch64-linux /home/build/.ssh/d56d3251-472e-46d2-b141-3c84cb1c1f59 1 1 benchmark,big-parallel,gccarch-armv8-a,kvm,nixos-test - c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSVBhOUxMTjdHTWhLVDkySGtyT1RFYjVjMmdvazVhOFE1Yzk2SWV3cERvcGcgcm9vdEBob3VyYWkK
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:srht-build
+      - name: test
         run: |
-          ip a l
-          ip -6 route
-          curl -6 https://google.com
+          echo "hello world"
